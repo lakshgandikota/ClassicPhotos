@@ -84,7 +84,7 @@ class ImageDownloader: Operation {
 }
 
 //Operation for Filtering
-class imageFiltration: Operation {
+class ImageFiltration: Operation {
     
     let photoRecord: PhotoRecord
     
