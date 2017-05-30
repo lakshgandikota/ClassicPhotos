@@ -12,9 +12,7 @@ import CoreImage
 let dataSourceURL = URL(string:"http://www.raywenderlich.com/downloads/ClassicPhotosDictionary.plist")
 
 class ListViewController: UITableViewController {
-  
-    //lazy var photos = NSDictionary(contentsOf:dataSourceURL!)!
-    var photos = [PhotoRecord]()
+    
     let pendingOperations = PendingOperations()
     
     override func viewDidLoad() {
@@ -29,14 +27,14 @@ class ListViewController: UITableViewController {
     }
     
     // #pragma mark - Table view data source
-  
+    
     override func tableView(_ tableView: UITableView?, numberOfRowsInSection section: Int) -> Int {
-        return photos.count
+        return PhotosManager.shared.photos.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "CellIdentifier", for: indexPath)
-
+        
         if cell.accessoryView == nil {
             let indicator = UIActivityIndicatorView(activityIndicatorStyle: .gray)
             cell.accessoryView = indicator
@@ -44,7 +42,7 @@ class ListViewController: UITableViewController {
         
         let indicator = cell.accessoryView as! UIActivityIndicatorView
         
-        let photoDetails = photos[indexPath.row]
+        let photoDetails = PhotosManager.shared.photos[indexPath.row]
         
         cell.textLabel?.text = photoDetails.name
         cell.imageView?.image = photoDetails.image
@@ -59,14 +57,14 @@ class ListViewController: UITableViewController {
             indicator.startAnimating()
             
             if (!tableView.isDragging && !tableView.isDecelerating) {
-            
+                
                 self.startOperationsForPhotoRecord(photoDetails: photoDetails, indexPath: indexPath as NSIndexPath)
             }
         }
         
         return cell
     }
-  
+    
     override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         suspendAllOperations()
     }
@@ -123,7 +121,7 @@ class ListViewController: UITableViewController {
             
             for indexPath in toBeStarted {
                 let indexPath = indexPath as NSIndexPath
-                let recordToProcess = self.photos[indexPath.row]
+                let recordToProcess = PhotosManager.shared.photos[indexPath.row]
                 startOperationsForPhotoRecord(photoDetails: recordToProcess, indexPath: indexPath)
             }
         }
@@ -155,10 +153,10 @@ class ListViewController: UITableViewController {
                 return
             }
             
-            DispatchQueue.main.async(execute: {
+            DispatchQueue.main.async {
                 self.pendingOperations.downloadInProgress.removeValue(forKey: indexPath)
                 self.tableView.reloadRows(at: [indexPath as IndexPath], with: .fade)
-            })
+            }
             
         }
         
@@ -182,10 +180,10 @@ class ListViewController: UITableViewController {
                 return
             }
             
-            DispatchQueue.main.async(execute: {
+            DispatchQueue.main.async {
                 self.pendingOperations.filtrationsInProgress.removeValue(forKey: indexPath)
                 self.tableView.reloadRows(at: [indexPath as IndexPath], with: .fade)
-            })
+            }
             
             
         }
@@ -209,7 +207,7 @@ class ListViewController: UITableViewController {
                 return
             }
             
-
+            
             var datasourceDictionary: Dictionary <String, String>?
             
             do {
@@ -226,20 +224,17 @@ class ListViewController: UITableViewController {
                 print("\(name) ==> \(url?.description)")
                 if url != nil {
                     let photoRecord = PhotoRecord(name: name, url: url!)
-                    self.photos.append(photoRecord)
+                    PhotosManager.shared.addPhoto(photoRecord)
                 }
             }
-
-            self.tableView.reloadData()
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
         }
         
         
         task.resume()
-        
-
-                
-        
-
         
         UIApplication.shared.isNetworkActivityIndicatorVisible = false
     }
