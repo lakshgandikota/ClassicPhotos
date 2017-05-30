@@ -13,9 +13,6 @@ let dataSourceURL = URL(string:"http://www.raywenderlich.com/downloads/ClassicPh
 
 class ListViewController: UITableViewController {
     
-    //lazy var photos = NSDictionary(contentsOf:dataSourceURL!)!
-    //    var photos = [PhotoRecord]()      // Use singleton with thread-safe read/write PhotosManager
-    
     let pendingOperations = PendingOperations()
     
     override func viewDidLoad() {
@@ -32,7 +29,7 @@ class ListViewController: UITableViewController {
     // #pragma mark - Table view data source
     
     override func tableView(_ tableView: UITableView?, numberOfRowsInSection section: Int) -> Int {
-        return PhotosManager.shared.photos.count // photos.count
+        return PhotosManager.shared.photos.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -228,7 +225,6 @@ class ListViewController: UITableViewController {
                 if url != nil {
                     let photoRecord = PhotoRecord(name: name, url: url!)
                     PhotosManager.shared.addPhoto(photoRecord)
-                    //                    self.photos.append(photoRecord)
                 }
             }
             
