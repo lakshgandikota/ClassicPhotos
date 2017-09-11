@@ -231,6 +231,8 @@ class ListViewController: UITableViewController {
             }
 
             self.tableView.reloadData()
+                                                                        
+            UIApplication.shared.isNetworkActivityIndicatorVisible = false
         }
         
         
@@ -241,6 +243,6 @@ class ListViewController: UITableViewController {
         
 
         
-        UIApplication.shared.isNetworkActivityIndicatorVisible = false
+        
     }
 }
